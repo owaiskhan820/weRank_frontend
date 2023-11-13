@@ -1,19 +1,33 @@
 // src/App.js
-import React from 'react';
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
-import store, { persistor } from './redux/store';
+import React, { useEffect } from 'react';
+import { Provider, useDispatch } from 'react-redux';
+import store from './redux/store';
 import AppRoutes from './routes/routes';
-import LoadingModal from './shared/LoadingModal/LoadingModal'
+import { setCredentials } from './redux/auth/authSlice';
 
-function App() {
+const App = () => {
   return (
     <Provider store={store}>
-      <PersistGate loading={<LoadingModal />} persistor={persistor}>
+      <RehydrationWrapper>
         <AppRoutes />
-      </PersistGate>
+      </RehydrationWrapper>
     </Provider>
   );
+}
+
+// Create a wrapper component for rehydration logic
+const RehydrationWrapper = ({ children }) => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const localUser = localStorage.getItem('user');
+    const localToken = localStorage.getItem('token');
+    if (localUser && localToken) {
+      dispatch(setCredentials({ user: JSON.parse(localUser), token: localToken }));
+    }
+  }, [dispatch]);
+
+  return children;
 }
 
 export default App;

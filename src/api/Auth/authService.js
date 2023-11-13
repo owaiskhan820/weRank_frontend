@@ -10,11 +10,14 @@ export const login = async (userData) => {
       },
       body: JSON.stringify(userData),
     });
-     const { user, token } = await response.json();
+
     if (!response.ok) {
-      // If HTTP-status is 4xx or 5xx, throw an error with the message from the server
-      throw new Error('Login failed');
+      // Handle non-2xx status codes
+      const errorBody = await response.json();
+      throw new Error(errorBody.message || "An error occurred during login");
     }
+
+    const { user, token } = await response.json();
     return { user, token };
   } catch (error) {
     // Log the error to the console and re-throw it
@@ -22,6 +25,7 @@ export const login = async (userData) => {
     throw error;
   }
 };
+
 
 
 
@@ -38,12 +42,11 @@ export const signup = async (userData) => {
 
     if (!response.ok) {
       // If HTTP-status is 4xx or 5xx, throw an error with the message from the server
-      throw new Error(data.message || 'Login failed');
+      throw new Error(data.message || 'Registration failed');
     }
-    return data; // This will contain the token on successful login
+    return data;
   } catch (error) {
-    // Log the error to the console and re-throw it
-    console.error('Login error:', error);
+    console.error('Signup error:', error);
     throw error;
   }
 };

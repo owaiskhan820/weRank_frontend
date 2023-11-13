@@ -18,7 +18,7 @@ const Login = () => {
   const handleLoginSubmit = async (formData, mode) => {
     try {
       setIsLoading(true); // Show the loading modal
-
+  
       const { user, token } = await login(formData);
       
       if (user) {
@@ -27,12 +27,13 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert("Login failed:", error.message);
+      alert(`Login failed: ${error.message}`);
     }
     finally {
       setIsLoading(false); // Hide the loading modal
     }
   };
+  
   return (
     <ThemeProvider theme={theme}>
       <Grid container justifyContent="center" style={{ minHeight: '100vh' }}>
