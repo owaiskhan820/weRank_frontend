@@ -1,33 +1,24 @@
 // src/App.js
-import React, { useEffect } from 'react';
-import { Provider, useDispatch } from 'react-redux';
-import store from './redux/store';
+import React  from 'react';
+import { Provider  } from 'react-redux';
 import AppRoutes from './routes/routes';
-import { setCredentials } from './redux/auth/authSlice';
+import { ThemeProvider } from '@material-ui/core/styles';
+import theme from './utils/theme'; // Import your custom theme
+import { PersistGate } from 'redux-persist/integration/react';
+import store, { persistor } from './redux/store'; // Adjust the path as necessary
+
 
 const App = () => {
   return (
     <Provider store={store}>
-      <RehydrationWrapper>
-        <AppRoutes />
-      </RehydrationWrapper>
+          <PersistGate loading={null} persistor={persistor}>
+      <ThemeProvider theme={theme}> {/* Wrap your components with ThemeProvider */}
+          <AppRoutes />
+      </ThemeProvider>
+        </PersistGate>
     </Provider>
   );
 }
 
-// Create a wrapper component for rehydration logic
-const RehydrationWrapper = ({ children }) => {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const localUser = localStorage.getItem('user');
-    const localToken = localStorage.getItem('token');
-    if (localUser && localToken) {
-      dispatch(setCredentials({ user: JSON.parse(localUser), token: localToken }));
-    }
-  }, [dispatch]);
-
-  return children;
-}
 
 export default App;

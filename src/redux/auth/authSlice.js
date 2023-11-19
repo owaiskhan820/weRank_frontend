@@ -1,5 +1,6 @@
-// src/redux/auth/authSlice.js
 import { createSlice } from '@reduxjs/toolkit';
+import { persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage'; // Defaults to localStorage for web
 
 const initialState = {
   user: null,
@@ -16,19 +17,22 @@ const authSlice = createSlice({
       state.user = user;
       state.token = token;
       state.isLoggedIn = true;
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('token', token);
     },
     logout: (state) => {
       state.user = null;
       state.token = null;
       state.isLoggedIn = false;
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
     },
     // ... other reducers if any
   },
 });
 
+const authPersistConfig = {
+  key: 'auth',
+  storage,
+};
+
+const persistedAuthReducer = persistReducer(authPersistConfig, authSlice.reducer);
+
 export const { setCredentials, logout } = authSlice.actions;
-export default authSlice.reducer;
+export default persistedAuthReducer;

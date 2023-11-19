@@ -1,54 +1,54 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { verifyEmailToken } from '../../api/Auth/authService';
-import { logout } from '../../redux/auth/authSlice'; // Import actions
-import { setCredentials } from '../../redux/auth/authSlice';
-import LoadingModal from '../../shared/LoadingModal/LoadingModal'
+import React from 'react';
+import { useSelector } from 'react-redux';
+import useEmailVerification from '../../hooks/auth/useEmailVerification';
 import Alert from '@mui/material/Alert';
+import { LeftSidebar } from '../../components/Home/LeftSidebar';
+import { RightSidebar } from '../../components/Home/RightSidebar';
+import { Feed } from '../../components/Home/Feed';
+import { makeStyles, Grid } from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  sidebar: {
+    [theme.breakpoints.down('md')]: {
+      display: 'none', // Hide sidebars on smaller screens
+    },
+  },
+}));
 
 const Home = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [searchParams] = useSearchParams();
-  const auth = useSelector((state) => state.auth);
-  const [isLoading, setIsLoading] = useState(false); // State to manage loading
+  const classes = useStyles();
+  const auth  = useSelector((state) => state.auth);
+  console.log(auth)
+  const { isVerified, isFirstVerification } = useEmailVerification();
 
-  useEffect(() => {
-    const verifyUserEmail = async () => {
-      const token = searchParams.get('token');
-      if (token) {
-        setIsLoading(true); // Enable loading state
-        try {
-          const response = await verifyEmailToken(token);
-          dispatch(setCredentials({ user: response.user, token: auth.token }));
-          navigate('/', { replace: true });
-        } catch (error) {
-          console.error('Error verifying email:', error);
-          dispatch(logout());
-          navigate('/login');
-        } finally {
-          setIsLoading(false); // Disable loading state
-        }
-      }
-    };
-  
-    verifyUserEmail();
-  }, [dispatch, navigate, searchParams, auth.token]);
-
-  
-
-  // Render method that checks the isVerified flag
-  // and shows a message if the user is not verified
   return (
-    <div>
-      {isLoading && <LoadingModal />} 
-      {auth.user && auth.user.isVerified ? (
-        <Alert severity="info">Hi {auth.user.username}, you are verified.</Alert>
-      ) : (
-        <Alert severity="success">Hi, {auth.user ? auth.user.username : 'Guest'}, you are not verified yet. Consider Verifying your Email before continuing</Alert>
+    <div className={classes.root}>
+      {auth.user && !isVerified && (
+        <Alert severity="info">
+          Hi {auth.user.username}, please consider verifying your email.
+        </Alert>
       )}
-      {/* Rest of your homepage content */}
+      {isFirstVerification && (
+        <Alert severity="success">
+          Hi {auth.user.username}, you have successfully verified your email.
+        </Alert>
+      )}
+      <div className={classes.content}>
+        <Grid container spacing={2}>
+          <Grid item xs={false} md={2} className={classes.sidebar}>
+            <LeftSidebar />
+          </Grid>
+          <Grid item xs={1} md={7}>
+            <Feed />
+          </Grid>
+          <Grid item xs={false} md={3} className={classes.sidebar}>
+            <RightSidebar />
+          </Grid>
+        </Grid>
+      </div>
     </div>
   );
 };
