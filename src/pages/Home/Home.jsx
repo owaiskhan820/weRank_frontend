@@ -4,8 +4,13 @@ import useEmailVerification from '../../hooks/auth/useEmailVerification';
 import Alert from '@mui/material/Alert';
 import { LeftSidebar } from '../../components/Home/LeftSidebar';
 import { RightSidebar } from '../../components/Home/RightSidebar';
-import { Feed } from '../../components/Home/Feed';
+// import { Feed } from '../../components/Home/Feed';
 import { makeStyles, Grid } from '@material-ui/core';
+import Feed from '../../components/Feed/FeedRefactored'
+import { useState } from 'react';
+import CreateListComponent from '../../components/CreateList/CreateList';
+import ProfileComponent from '../../components/Profile/Profile';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,9 +24,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Home = () => {
+  const [currentView, setCurrentView] = useState('feed'); 
   const classes = useStyles();
   const auth  = useSelector((state) => state.auth);
-  console.log(auth)
   const { isVerified, isFirstVerification } = useEmailVerification();
 
   return (
@@ -39,10 +44,12 @@ const Home = () => {
       <div className={classes.content}>
         <Grid container spacing={2}>
           <Grid item xs={false} md={2} className={classes.sidebar}>
-            <LeftSidebar />
+            <LeftSidebar onSelectionChange={setCurrentView}/>
           </Grid>
           <Grid item xs={1} md={7}>
-            <Feed />
+            {currentView === 'feed' && <Feed />}
+            {currentView === 'createList' && <CreateListComponent />}
+            {currentView === 'profile' && <ProfileComponent />}
           </Grid>
           <Grid item xs={false} md={3} className={classes.sidebar}>
             <RightSidebar />

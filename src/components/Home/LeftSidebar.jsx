@@ -1,64 +1,102 @@
-
 import React from 'react';
-import { Drawer, List, ListItem, ListItemIcon, ListItemText, makeStyles, IconButton } from '@material-ui/core';
-import HomeIcon from '@material-ui/icons/Home';
-import ExploreIcon from '@material-ui/icons/Explore';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import MailIcon from '@material-ui/icons/Mail';
-import ListAltIcon from '@material-ui/icons/ListAlt';
-import BookmarkIcon from '@material-ui/icons/Bookmark';
-import GroupIcon from '@material-ui/icons/Group';
-import StarBorderIcon from '@material-ui/icons/StarBorder';
-import PersonIcon from '@material-ui/icons/Person';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import { Drawer, List, ListItem, ListItemIcon, ListItemText, useTheme, makeStyles, useMediaQuery } from '@material-ui/core';
 import Logo from '../../images/werankLogo.png';  
+import { IoIosCreate } from "react-icons/io";
+import { FaHome } from "react-icons/fa";
+import { IoNotificationsSharp } from "react-icons/io5";
+import { FaBookmark } from "react-icons/fa6";
+import { IoPersonSharp } from "react-icons/io5";
+import { IoIosMore } from "react-icons/io";
+import { useNavigate } from 'react-router-dom';
+
+
 
 const drawerWidth = 250; // Width of the sidebar
 
 const useStyles = makeStyles((theme) => ({
-    icon: {
-        color: '#000501', // Use any color from the theme
-      },
-    drawer: {
+  drawer: {
+    width: drawerWidth,
+    flexShrink: 0,
+    '& .MuiDrawer-paper': {
       width: drawerWidth,
-      flexShrink: 0,
-      '& .MuiDrawer-paper': {
-        marginTop: '24px', // Adjust this to match your AppBar's height
-        marginLeft: '14px', // Adjust this to match your AppBar's height
-
-        width: drawerWidth,
-        boxSizing: 'border-box',
+      backgroundColor: '#FFFFFF', // A light background will contrast well with the theme color
+    },
+  },
+  icon: {
+    color: '#0A6A69', // Your theme color
+    
+  },
+  // Add more styles as needed...
+  logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: theme.spacing(2),
+  },
+  logo: {
+    width: '100%', // Adjust size to fit your logo aspect ratio
+    padding: theme.spacing(1), // Add some padding if needed
+    // You can add more styles for the logo
+  },
+  listItem: {
+    '&:hover': {
+      backgroundColor: '#0A6A69', // Use the theme color for hover state
+      '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+        color: theme.palette.common.white, // Change text and icon color on hover
       },
     },
-    // ... other styles ...
-  }));
+  },
+  // Responsive drawer
+  drawerPaper: {
+    width: drawerWidth,
+   
+  },
+}));
 
-export const LeftSidebar = () => {
-    const classes = useStyles();
+
+
+export const LeftSidebar = ({onSelectionChange}) => {
+  const classes = useStyles();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs')); // Determine if the current viewport is mobile size
+  const navigate = useNavigate();
+
+  const handleMenuItemClick = (path) => {
+    navigate(path); 
+  };
 
   return (
-    <Drawer className={classes.drawer}
-            variant="permanent"
-            anchor="left"
-            >
-      <IconButton edge="start" color="inherit" aria-label="open home">
-                <img src={Logo} alt="Logo" style={{ width: '280px', marginBottom: '2px' }} />
-        </IconButton>
+    <Drawer
+      className={classes.drawer}
+      variant={isMobile ? 'temporary' : 'permanent'}
+      classes={{ paper: classes.drawerPaper }}
+      anchor="left"
+      open={!isMobile} // If mobile, control the open state with your own state/logic
+      // You can add onClose handler to handle the drawer close event
+    >
+      <div className={classes.logoContainer}>
+        <img src={Logo} alt="Logo" className={classes.logo} />
+      </div>
       <List className={classes.list}>
         {[
-          { text: 'Home', icon: <HomeIcon className={classes.icon}/> },
-          { text: 'Profile', icon: <PersonIcon className={classes.icon}/> },
-          { text: 'Notifications', icon: <NotificationsIcon className={classes.icon}/> },
-          { text: 'Watchlist', icon: <BookmarkIcon className={classes.icon}/> },
-          { text: 'More', icon: <MoreHorizIcon className={classes.icon}/> },
+          { text: 'Home', icon: <FaHome size="1.25em" />,  view: 'feed'},
+          { text: 'Profile', icon: <IoPersonSharp size="1.25em"/>,view: 'profile' },
+          { text: 'Create List', icon: <IoIosCreate size="1.25em" />, view: 'createList'},
+          { text: 'Notifications', icon: <IoNotificationsSharp size="1.25em" /> },
+          { text: 'Watchlist', icon: <FaBookmark  /> },
+          { text: 'More', icon: <IoIosMore size="1.25em" /> },
         ].map((item, index) => (
-          <ListItem button key={item.text}>
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.text} />
+          <ListItem
+          button 
+          key={item.text}
+          className={classes.listItem}
+          onClick={() => onSelectionChange(item.view)}
+          >
+            <ListItemIcon className={classes.icon}>{item.icon}</ListItemIcon>
+            <ListItemText primary={item.text} classes={{ primary: classes.icon }} />
           </ListItem>
         ))}
       </List>
     </Drawer>
   );
 }
-

@@ -2,6 +2,7 @@
 const API_BASE_URL = 'http://localhost:3000/api/v1/userFeed'; // Your API's base URL
 
 export async function fetchFeedByFollowing(token) {
+    console.log("running fetch feed by following.")
     try {
         const response = await fetch(`${API_BASE_URL}/feed/following?token=${token}`, {
             method: 'GET',
@@ -17,7 +18,7 @@ export async function fetchFeedByFollowing(token) {
         const data = await response.json();
         return data;    
     } catch (error) {
-        console.error('Error fetching For You feed:', error);
+        console.error('Error fetching feed by following:', error);
         throw error;
     }
 }
