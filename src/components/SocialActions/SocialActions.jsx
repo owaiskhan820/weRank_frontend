@@ -9,7 +9,7 @@ import ContributeModal from './ContributeModal';
 import { addListToWatchlist, removeListFromWatchlist, voteOnList } from '../../api/SocialActions/SocialActions';
 
 // SocialActions component
-const SocialActions = ({ listId, isInitiallyWatchlisted, initialVoteType, token, onToggleComments, listItems }) => {
+const SocialActions = ({ listId, isInitiallyWatchlisted, initialVoteType, token, onToggleComments, listItems, onActionComplete }) => {
     const [isWatchlisted, setIsWatchlisted] = useState(isInitiallyWatchlisted);
     const[ modalVisible, setModalVisible] = useState(false)
     const [isUpvoted, setUpvote] = useState(initialVoteType )
@@ -22,6 +22,7 @@ const SocialActions = ({ listId, isInitiallyWatchlisted, initialVoteType, token,
             await voteOnList(listId, 'upvote', token);
             setUpvote(!isUpvoted);
             setDownVote(false); // Reset downvote if it was set
+            onActionComplete(listId)
         } catch (error) {
             console.error('Error upvoting list:', error);
             // Handle the error appropriately (e.g., show a message to the user)
@@ -33,6 +34,7 @@ const SocialActions = ({ listId, isInitiallyWatchlisted, initialVoteType, token,
             await voteOnList(listId, 'downvote', token);
             setDownVote(!isDownvoted);
             setUpvote(false); // Reset upvote if it was set
+            onActionComplete(listId)
         } catch (error) {
             console.error('Error downvoting list:', error);
             // Handle the error appropriately

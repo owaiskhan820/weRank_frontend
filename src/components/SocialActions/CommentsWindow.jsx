@@ -5,7 +5,7 @@ import { fetchCommentsByListId, postComment, deleteComment } from '../../api/Soc
 import useStyles from '../../styles/feed/commentWindow';
 import { useSelector } from 'react-redux'; // Import useSelector
 
-const CommentWindow = ({ isVisible, listId, token }) => {
+const CommentWindow = ({ isVisible, listId, token, onCommentAdded}) => {
   const [comments, setComments] = useState([]);
   const [newCommentText, setNewCommentText] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
@@ -35,6 +35,7 @@ const CommentWindow = ({ isVisible, listId, token }) => {
       const addedComment = await postComment(listId, newCommentText, token);
       setComments([...comments, addedComment]);
       setNewCommentText('');
+      onCommentAdded(listId)
     } catch (error) {
       console.error('Error posting new comment:', error);
     }

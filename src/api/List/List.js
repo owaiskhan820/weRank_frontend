@@ -23,3 +23,28 @@ export async function getSuggestedLists(userId) {
         throw error;
     }
 }
+
+
+export const getListScore = async (listId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/list-score/${listId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          // Include authorization header if needed
+          // 'Authorization': `Bearer ${yourAuthToken}`
+        }
+      });
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      const listScore = await response.json();
+      return listScore;
+    } catch (error) {
+      console.error('Error fetching list score:', error);
+      throw error;
+    }
+  };
+  

@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { isListInWatchlist, getUserVoteType } from '../../api/SocialActions/SocialActions';
 import LoadingModal from '../../shared/LoadingModal/LoadingModal'
 import CommentWindow from '../SocialActions/CommentsWindow';
+import { getListScore } from '../../api/List/List';
 
 const FeedItem = ({ feedItem, userCredentials, token }) => {
   const classes = useStyles();
@@ -14,9 +15,22 @@ const FeedItem = ({ feedItem, userCredentials, token }) => {
   const [isWatchlisted, setIsWatchlisted] = useState(false);
   const [voteStatus, setVoteStatus] = useState(null); 
   const [showComments, setShowComments] = useState(false);
+  const [listScore, setListScore] = useState(null);
 
   const toggleComments = () => {
     setShowComments(!showComments);
+  };
+
+  const fetchListScore = async (feedItemId) => {
+    try {
+      const score = await getListScore(feedItemId);
+      console.log(score);
+
+      setListScore(score);
+
+    } catch (error) {
+      console.error("Error fetching list score:", error);
+    }
   };
   
   useEffect(() => {
@@ -26,24 +40,22 @@ const FeedItem = ({ feedItem, userCredentials, token }) => {
             setIsWatchlisted(status);
             const currentVoteStatus = await getUserVoteType(feedItem._id, token); // Fetch vote status
             currentVoteStatus === "upvote" ? setVoteStatus(true) : setVoteStatus(false)
-
       } catch (error) {
         console.error("Error checking watchlist status:", error);
       }
-      setIsLoading(false);
     };
 
     checkWatchlistStatus();
+    fetchListScore(feedItem._id);
+    setIsLoading(false);
+
   }, [feedItem._id, token]);
-
-
 
   const formattedDate = new Date(feedItem.createdDate).toLocaleDateString('en-US', {
     hour: 'numeric',
     minute: 'numeric',
     hour12: true
   });
-
 
   
 
@@ -61,6 +73,13 @@ const FeedItem = ({ feedItem, userCredentials, token }) => {
                 {formattedDate}
               </Typography>
             </Grid>
+             {listScore !== null && (
+              <Grid item xs={12}>
+                <Typography variant="body2" align="right">
+                  Score: {listScore}
+                </Typography>
+              </Grid>
+            )}
           </Grid>
         }
         className={classes.cardHeader}
@@ -86,13 +105,21 @@ const FeedItem = ({ feedItem, userCredentials, token }) => {
           token={token}
           listItems={feedItem}
           onToggleComments={toggleComments}
+          onActionComplete={fetchListScore} // Pass the callback as a prop
+
         />
       )}
        {showComments && 
        <CommentWindow 
           isVisible={showComments}
           listId={feedItem._id}
-          token={token}/>}
+          token={token}
+          onCommentAdded={fetchListScore} // Pass the callback as a prop
+
+          />
+          
+          }
+
 
       </CardContent>
 

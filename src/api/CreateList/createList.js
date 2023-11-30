@@ -22,7 +22,7 @@ export const fetchAllCategories = async () => {
     }
   };
 
-  export const createNewList = async (categoryId, title, listItems, token) => {
+  export const createNewList = async (listData, token) => {
     const url = `${API_BASE_URL}/list/createList/?token=${token}`;
   
     try {
@@ -32,9 +32,7 @@ export const fetchAllCategories = async () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          title,
-          categoryId,
-          listItems
+          listData
         })
       });
   

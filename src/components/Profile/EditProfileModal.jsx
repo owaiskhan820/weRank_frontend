@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogTitle, TextField, Button, Select, MenuItem, makeStyles, Chip, Input, FormControl, InputLabel } from '@material-ui/core';
 import { useSelector } from 'react-redux';
 import { fetchAllCategories } from '../../api/CreateList/createList';
-import { updateProfile } from '../../api/profile/profile';
+import { updateProfile, getProfileByUserId } from '../../api/profile/profile';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -98,6 +98,31 @@ const EditProfileModal = ({ open, handleClose }) => {
       setLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+    if (open) {
+      setLoading(true);
+      getProfileByUserId(user._id)
+        .then(profileData => {
+          setFormData({
+            bio: profileData.bio || '',
+            location: profileData.location || '',
+            phone: profileData.phone || '',
+            socialLinks: {
+              facebook: profileData.socialLinks?.facebook || '',
+              instagram: profileData.socialLinks?.instagram || '',
+              twitter: profileData.socialLinks?.twitter || ''
+            },
+            interests: profileData.interests || []
+          });
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error('Error fetching profile data:', error);
+          setLoading(false);
+        });
+    }
+  }, [open, user._id]);
 
   const handleChange = (e) => {
     if (e.target.name in formData.socialLinks) {
