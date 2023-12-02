@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Box } from '@material-ui/core';
+import { Card, Box } from '@mui/material';
 import { useSelector } from 'react-redux';
 import LoadingModal from '../../shared/LoadingModal/LoadingModal';
 import FeedItem from './FeedItem';

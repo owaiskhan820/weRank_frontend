@@ -1,5 +1,5 @@
 // ListFormStyles.js
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles((theme) => ({
   formContainer: {

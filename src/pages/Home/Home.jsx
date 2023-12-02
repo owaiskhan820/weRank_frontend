@@ -1,36 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import useEmailVerification from '../../hooks/auth/useEmailVerification';
 import Alert from '@mui/material/Alert';
 import { LeftSidebar } from '../../components/Home/LeftSidebar';
 import { RightSidebar } from '../../components/Home/RightSidebar';
-// import { Feed } from '../../components/Home/Feed';
-import { makeStyles, Grid } from '@material-ui/core';
-import Feed from '../../components/Feed/FeedRefactored'
-import { useState } from 'react';
+import { Grid, styled } from '@mui/material';
+import Feed from '../../components/Feed/FeedRefactored';
 import CreateListComponent from '../../components/CreateList/CreateList';
 import ProfileComponent from '../../components/Profile/Profile';
+import Notifications from '../../components/Notifications/Notifications';
 
+const RootContainer = styled('div')(({ theme }) => ({
+  flexGrow: 1,
+}));
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  sidebar: {
-    [theme.breakpoints.down('md')]: {
-      display: 'none', // Hide sidebars on smaller screens
-    },
+const Sidebar = styled(Grid)(({ theme }) => ({
+  [theme.breakpoints.down('md')]: {
+    display: 'none',
   },
 }));
 
 const Home = () => {
-  const [currentView, setCurrentView] = useState('feed'); 
-  const classes = useStyles();
-  const auth  = useSelector((state) => state.auth);
+  const [currentView, setCurrentView] = useState('feed');
+  const auth = useSelector((state) => state.auth);
   const { isVerified, isFirstVerification } = useEmailVerification();
 
   return (
-    <div className={classes.root}>
+    <RootContainer>
       {auth.user && !isVerified && (
         <Alert severity="info">
           Hi {auth.user.username}, please consider verifying your email.
@@ -41,22 +37,21 @@ const Home = () => {
           Hi {auth.user.username}, you have successfully verified your email.
         </Alert>
       )}
-      <div className={classes.content}>
-        <Grid container spacing={2}>
-          <Grid item xs={false} md={2} className={classes.sidebar}>
-            <LeftSidebar onSelectionChange={setCurrentView}/>
-          </Grid>
-          <Grid item xs={1} md={7}>
-            {currentView === 'feed' && <Feed />}
-            {currentView === 'createList' && <CreateListComponent />}
-            {currentView === 'profile' && <ProfileComponent />}
-          </Grid>
-          <Grid item xs={false} md={3} className={classes.sidebar}>
-            <RightSidebar />
-          </Grid>
+      <Grid container spacing={2}>
+        <Sidebar item xs={false} md={2}>
+          <LeftSidebar onSelectionChange={setCurrentView} />
+        </Sidebar>
+        <Grid item xs={12} md={7}>
+          {currentView === 'feed' && <Feed />}
+          {currentView === 'createList' && <CreateListComponent />}
+          {currentView === 'profile' && <ProfileComponent />}
+          {currentView === 'notifications' && <Notifications />}
         </Grid>
-      </div>
-    </div>
+        <Sidebar item xs={false} md={3}>
+          <RightSidebar />
+        </Sidebar>
+      </Grid>
+    </RootContainer>
   );
 };
 

@@ -1,81 +1,73 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogTitle, TextField, Button, Select, MenuItem, makeStyles, Chip, Input, FormControl, InputLabel } from '@material-ui/core';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  Chip,
+  Input,
+  FormControl,
+  InputLabel,
+  styled
+} from '@mui/material';
 import { useSelector } from 'react-redux';
 import { fetchAllCategories } from '../../api/CreateList/createList';
 import { updateProfile, getProfileByUserId } from '../../api/profile/profile';
 
+// Styled components
+const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+  color: theme.palette.primary.contrastText,
+}));
 
-const useStyles = makeStyles((theme) => ({
-    dialogTitle: {
-      backgroundColor: theme.palette.primary.main,
-      color: theme.palette.primary.contrastText,
-    },
-    dialogContent: {
-      '& .MuiTextField-root': {
-        margin: theme.spacing(1, 0),
-        '& .MuiInput-underline:after': {
-          borderBottomColor: theme.palette.primary.main,
-        },
-      },
-      '& .MuiButton-root': {
-        margin: theme.spacing(2, 0, 1),
-      },
-      '& .MuiSelect-root': {
-        margin: theme.spacing(1, 0),
-      },
-    },
-    textField: {
-      '& label.Mui-focused': {
-        color: theme.palette.primary.main,
-      },
-      '& .MuiInput-underline:after': {
-        borderBottomColor: theme.palette.primary.main,
-      },
-    },
-    buttonSave: {
-      backgroundColor: theme.palette.primary.main,
-      color: 'white',
-      '&:hover': {
-        backgroundColor: theme.palette.primary.dark,
-      },
-    },
+const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
+  '& .MuiTextField-root': {
+    margin: theme.spacing(1, 0),
+  },
+  '& .MuiButton-root': {
+    margin: theme.spacing(2, 0, 1),
+  },
+  '& .MuiSelect-root': {
+    margin: theme.spacing(1, 0),
+  },
+}));
 
-    textField: {
-        margin: theme.spacing(1, 0),
-        '& .MuiOutlinedInput-root': {
-          '& fieldset': {
-            borderColor: '#0A6A69', // Use main color for the border
-          },
-          '&:hover fieldset': {
-            borderColor: '#0A6A69', // Darken or lighten according to your preference
-          },
-          '&.Mui-focused fieldset': {
-            borderColor: '#0A6A69', // Use main color for the border when focused
-          },
-        },
-      },
-      multiline: {
-        margin: theme.spacing(1, 0),
-        '& .MuiOutlinedInput-root': {
-          '& fieldset': {
-            borderColor: '#0A6A69', // Use main color for the border
-          },
-        },
-      },
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  '& label.Mui-focused': {
+    color: theme.palette.primary.main,
+  },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: theme.palette.primary.main,
+    },
+    '&:hover fieldset': {
+      borderColor: theme.palette.primary.main,
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: theme.palette.primary.main,
+    },
+  },
+  margin: theme.spacing(1, 0),
+}));
 
-      formControl: {
-        margin: theme.spacing(1, 0),
-        minWidth: 120,
-        width: '100%', // Ensure the form control takes the full width
-      },
-      selectEmpty: {
-        marginTop: theme.spacing(2),
-      },
-  }));
-  
+const StyledButton = styled(Button)(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+  color: 'white',
+  '&:hover': {
+    backgroundColor: theme.palette.primary.dark,
+  },
+}));
+
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  margin: theme.spacing(1, 0),
+  minWidth: 120,
+  width: '100%',
+}));
 
 const EditProfileModal = ({ open, handleClose }) => {
-    const classes = useStyles();
     const { user, token } = useSelector((state) => state.auth);
     const [formData, setFormData] = useState({
     bio: '',
@@ -88,6 +80,18 @@ const EditProfileModal = ({ open, handleClose }) => {
     },
     interests: []
   });
+
+
+const ChipsContainer = styled('div')({
+    display: 'flex',
+    flexWrap: 'wrap',
+    // Add any additional styles for the container of chips
+  });
+  
+  const StyledChip = styled(Chip)(({ theme }) => ({
+    margin: 2,
+    // Add any additional styles for individual chips
+  }));
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -174,9 +178,9 @@ const EditProfileModal = ({ open, handleClose }) => {
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle className={classes.dialogTitle}>Edit Profile</DialogTitle>
-      <DialogContent className={classes.dialogContent}>
-        <TextField
+      <StyledDialogTitle>Edit Profile</StyledDialogTitle>
+      <StyledDialogContent>
+        <StyledTextField
           label="Bio"
           name="bio"
           value={formData.bio}
@@ -185,9 +189,8 @@ const EditProfileModal = ({ open, handleClose }) => {
           multiline
           rows={4}
           variant="outlined"
-          className={classes.multiline}
         />
-        <TextField
+        <StyledTextField
           label="Location"
           name="location"
           value={formData.location}
@@ -195,9 +198,8 @@ const EditProfileModal = ({ open, handleClose }) => {
           fullWidth
           margin="dense"
           variant="outlined"
-          className={classes.textField}
         />
-        <TextField
+        <StyledTextField
           label="Phone"
           name="phone"
           value={formData.phone}
@@ -205,10 +207,8 @@ const EditProfileModal = ({ open, handleClose }) => {
           fullWidth
           margin="dense"
           variant="outlined"
-          className={classes.textField}
         />
-        {/* Social Links */}
-        <TextField
+        <StyledTextField
           label="Facebook Link"
           name="facebook"
           value={formData.socialLinks.facebook}
@@ -216,9 +216,8 @@ const EditProfileModal = ({ open, handleClose }) => {
           fullWidth
           margin="dense"
           variant="outlined"
-          className={classes.textField}
         />
-        <TextField
+        <StyledTextField
           label="Instagram Link"
           name="instagram"
           value={formData.socialLinks.instagram}
@@ -226,9 +225,8 @@ const EditProfileModal = ({ open, handleClose }) => {
           fullWidth
           margin="dense"
           variant="outlined"
-          className={classes.textField}
         />
-        <TextField
+        <StyledTextField
           label="Twitter Link"
           name="twitter"
           value={formData.socialLinks.twitter}
@@ -236,9 +234,8 @@ const EditProfileModal = ({ open, handleClose }) => {
           fullWidth
           margin="dense"
           variant="outlined"
-          className={classes.textField}
         />
-         <FormControl className={classes.formControl}>
+        <StyledFormControl>
           <InputLabel id="interests-label">Interests</InputLabel>
           <Select
             labelId="interests-label"
@@ -248,28 +245,24 @@ const EditProfileModal = ({ open, handleClose }) => {
             onChange={handleInterestChange}
             input={<Input id="select-multiple-chip" />}
             renderValue={(selected) => (
-              <div className={classes.chips}>
+              <ChipsContainer>
                 {selected.map((interestId) => {
                   const categoryName = categories.find(cat => cat._id === interestId).categoryName;
                   return (
-                    <Chip
-                        key={interestId}
-                        label={categoryName}
-                        onDelete={handleDeleteChip(interestId)}
-                        className={classes.chip}
-                        onMouseDown={(event) => {
-                            event.stopPropagation();
-                        }}
-  // include deleteIcon prop if necessary
-                />
-
-                    
+                    <StyledChip
+                      key={interestId}
+                      label={categoryName}
+                      onDelete={handleDeleteChip(interestId)}
+                      onMouseDown={(event) => {
+                        event.stopPropagation();
+                      }}
+                    />
                   );
                 })}
-              </div>
+              </ChipsContainer>
             )}
             MenuProps={{
-              getContentAnchorEl: null, // This will prevent the menu from shifting position
+              getContentAnchorEl: null,
               anchorOrigin: {
                 vertical: "bottom",
                 horizontal: "left"
@@ -286,13 +279,13 @@ const EditProfileModal = ({ open, handleClose }) => {
               </MenuItem>
             ))}
           </Select>
-        </FormControl>
-        <Button onClick={handleSubmit} className={classes.buttonSave}>
+        </StyledFormControl>
+        <StyledButton onClick={handleSubmit}>
           Save Changes
-        </Button>
-      </DialogContent>
+        </StyledButton>
+      </StyledDialogContent>
     </Dialog>
   );
 };
-
-export default EditProfileModal;
+  
+  export default EditProfileModal;

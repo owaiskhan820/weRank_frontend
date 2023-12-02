@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore } from 'redux-persist';
 import authReducer from './auth/authSlice';
+import notificationReducer from './notifications/notificationSlice'
+
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
-    // Add other reducers here if you have any
+    notifications: notificationReducer,
   },
 });
 

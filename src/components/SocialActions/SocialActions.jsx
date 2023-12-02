@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Box, IconButton, Tooltip } from '@material-ui/core';
-import CommentIcon from '@material-ui/icons/Comment';
-import EditIcon from '@material-ui/icons/Edit';
-import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
-import BookmarkIcon from '@material-ui/icons/Bookmark';
+import { Box, IconButton, Tooltip } from '@mui/material';
+import CommentIcon from '@mui/icons-material/Comment';
+import EditIcon from '@mui/icons-material/Edit';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { TbSquareRoundedArrowUpFilled, TbSquareRoundedArrowUp, TbSquareRoundedArrowDownFilled, TbSquareRoundedArrowDown } from "react-icons/tb";
 import ContributeModal from './ContributeModal';
 import { addListToWatchlist, removeListFromWatchlist, voteOnList } from '../../api/SocialActions/SocialActions';
 
-// SocialActions component
+
 const SocialActions = ({ listId, isInitiallyWatchlisted, initialVoteType, token, onToggleComments, listItems, onActionComplete }) => {
     const [isWatchlisted, setIsWatchlisted] = useState(isInitiallyWatchlisted);
     const[ modalVisible, setModalVisible] = useState(false)

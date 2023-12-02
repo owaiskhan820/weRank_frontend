@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { getFollowingByUserId, getFollowersByUserId } from '../../api/profile/profile'; // Import your API calls
-import { Avatar, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@material-ui/core';
+import { Avatar, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
 
 const FollowComponent = ({ userId, token, type }) => {
   const [users, setUsers] = useState([]);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardHeader, CardContent, List, ListItem, ListItemText, Typography, Grid } from '@material-ui/core';
+import { Card, CardHeader, CardContent, List, ListItem, ListItemText, Typography, Grid } from '@mui/material';
 import UserAvatar from '../User/UserAvatar';
 import SocialActions from '../../components/SocialActions/SocialActions';
 import useStyles from '../../styles/feed/FeedStyles'; // Make sure this import path is correct

@@ -1,61 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import { List, ListItem, TextField, makeStyles, Paper, Chip } from '@material-ui/core';
+import { List, ListItem, TextField, Paper, Chip, styled } from '@mui/material';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
-const useStyles = makeStyles((theme) => ({
-  searchContainer: {
-    margin: theme.spacing(2, 0),
-    padding: theme.spacing(2),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  searchResultList: {
-    width: '100%',
-    maxHeight: 300,
-    overflowY: 'auto',
-    marginTop: theme.spacing(1),
-    border: `1px solid ${theme.palette.divider}`,
-    borderRadius: theme.shape.borderRadius,
-  },
-  searchInput: {
-    width: '100%',
-    marginBottom: theme.spacing(2),
-  },
-  listItem: {
-    cursor: 'pointer',
-    '&:hover': {
-      backgroundColor: theme.palette.action.hover,
-    },
-  },
-  selectedItemsList: {
-    marginTop: theme.spacing(2),
-  },
-  chip: {
-    backgroundColor: theme.palette.primary.main, // Use your theme's primary color
-    color: '#fff', // White text color
-    margin: theme.spacing(1), // Add spacing around chips
-    padding: theme.spacing(0.5), // Slightly larger padding
-    justifyContent: 'center', // Center the text and delete icon
-    '& .MuiChip-deleteIcon': { // Style the delete icon
-      color: '#fff',
-    },
-  },
-  // Add styles for the draggable container if needed
-  draggableContainer: {
-    display: 'flex', // Use flex to allow child elements (chips) to be in line
-    flexDirection: 'column', // Stack chips vertically
-    alignItems: 'center', // Center chips horizontally
-    padding: theme.spacing(1),
-    borderBottom: `1px solid ${theme.palette.divider}`,
-  }
+// Styled components
+const SearchContainer = styled(Paper)(({ theme }) => ({
+  margin: theme.spacing(2, 0),
+  padding: theme.spacing(2),
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
 }));
 
-const WikipediaSearch = ({setSelectedItems, selectedItems, category}) => {
+const SearchResultList = styled(List)(({ theme }) => ({
+  width: '100%',
+  maxHeight: 300,
+  overflowY: 'auto',
+  marginTop: theme.spacing(1),
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.shape.borderRadius,
+}));
+
+const SearchInput = styled(TextField)({
+  width: '100%',
+  marginBottom: '16px',
+});
+
+const StyledListItem = styled(ListItem)(({ theme }) => ({
+  cursor: 'pointer',
+  '&:hover': {
+    backgroundColor: theme.palette.action.hover,
+  },
+}));
+
+const DraggableContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  padding: theme.spacing(1),
+  borderBottom: `1px solid ${theme.palette.divider}`,
+}));
+
+const StyledChip = styled(Chip)(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+  color: '#fff',
+  margin: theme.spacing(1),
+  padding: theme.spacing(0.5),
+  justifyContent: 'center',
+  '& .MuiChip-deleteIcon': {
+    color: '#fff',
+  },
+}));
+
+const WikipediaSearch = ({ setSelectedItems, selectedItems, category }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const classes = useStyles();
-
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -64,31 +62,28 @@ const WikipediaSearch = ({setSelectedItems, selectedItems, category}) => {
       } else {
         setSearchResults([]);
       }
-    }, 500); // Delay in ms
+    }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm]);
+  }, [searchTerm, category]);
+
   const performSearch = async () => {
     if (!searchTerm) {
-      setSearchResults([]);
-      return;
-    }
-  
-    const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(` ${searchTerm}+" "+ ${category}`)}&format=json&origin=*`;
-  
-    try {
-      const response = await fetch(searchUrl);
-      const data = await response.json();
-  
-      // Just set the search results without combining with images
-      setSearchResults(data.query.search);
-    } catch (error) {
-      console.error('Error fetching search results:', error);
-    }
-  };
-  
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
+        setSearchResults([]);
+        return;
+      }
+    
+      const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(` ${searchTerm}+" "+ ${category}`)}&format=json&origin=*`;
+    
+      try {
+        const response = await fetch(searchUrl);
+        const data = await response.json();
+    
+        // Just set the search results without combining with images
+        setSearchResults(data.query.search);
+      } catch (error) {
+        console.error('Error fetching search results:', error);
+      }
   };
 
   const handleResultSelect = (result) => {
@@ -98,76 +93,62 @@ const WikipediaSearch = ({setSelectedItems, selectedItems, category}) => {
   };
 
   const onDragEnd = (result) => {
+    // Drag end logic
     if (!result.destination) {
-      return;
-    }
-    const items = Array.from(selectedItems);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-
-    setSelectedItems(items);
+        return;
+      }
+      const items = Array.from(selectedItems);
+      const [reorderedItem] = items.splice(result.source.index, 1);
+      items.splice(result.destination.index, 0, reorderedItem);
+  
+      setSelectedItems(items);
   };
-  
-    
-  
-  
 
-  const placeholder = `Search for ${category}`
+  const placeholder = `Search for ${category}`;
   return (
-    <Paper className={classes.searchContainer}>
-      <TextField
-        className={classes.searchInput}
+    <SearchContainer>
+      <SearchInput
         value={searchTerm}
-        onChange={handleSearchChange}
+        onChange={(e) => setSearchTerm(e.target.value)}
         placeholder={placeholder}
         variant="outlined"
       />
-      <List className={classes.searchResultList}>
+      <SearchResultList>
         {searchResults.map((result, index) => (
-          <ListItem key={index} className={classes.listItem} onClick={() => handleResultSelect(result)}>
+          <StyledListItem key={index} onClick={() => handleResultSelect(result)}>
             {result.title}
-          </ListItem>
+          </StyledListItem>
         ))}
-      </List>
+      </SearchResultList>
       <h2>Selected Items</h2>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable">
           {(provided) => (
             <div ref={provided.innerRef} {...provided.droppableProps}>
-              {selectedItems.length ? (
-                selectedItems.map((item, index) => (
-                  <Draggable key={item.pageid} draggableId={item.pageid.toString()} index={index}>
-                    {(provided) => (
-                      <div 
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className={classes.draggableContainer}
-                      >
-                        <Chip
-                          label={item.title}
-                          className={classes.chip}
-                          onDelete={() => {
-                            const newSelectedItems = selectedItems.filter(
-                              (i) => i.pageid !== item.pageid
-                            );
-                            setSelectedItems(newSelectedItems);
-                          }}
-                        />
-                      </div>
-                    )}
-                  </Draggable>
-                ))
-              ) : (
-                <div>Add items to get started...</div>
-              )}
+              {selectedItems.map((item, index) => (
+                <Draggable key={item.pageid} draggableId={item.pageid.toString()} index={index}>
+                  {(provided) => (
+                    <DraggableContainer
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <StyledChip
+                        label={item.title}
+                        onDelete={() => {
+                          setSelectedItems(selectedItems.filter((i) => i.pageid !== item.pageid));
+                        }}
+                      />
+                    </DraggableContainer>
+                  )}
+                </Draggable>
+              ))}
               {provided.placeholder}
             </div>
           )}
         </Droppable>
       </DragDropContext>
-
-    </Paper>
+    </SearchContainer>
   );
 };
 

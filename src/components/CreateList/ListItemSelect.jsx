@@ -1,100 +1,78 @@
 import React, { useState } from 'react';
-import { Box, Button, makeStyles, Typography, TextField } from '@material-ui/core';
+import { Box, Button, styled } from '@mui/material';
 import WikipediaSearch from './WikipediaSearch'; // Assuming you use the same search component
 import { createNewList } from '../../api/CreateList/createList';
 import { useSelector } from 'react-redux';
 import ListCreatedSuccess from './ListCreatedSuccess';
 
-const useStyles = makeStyles((theme) => ({
-    submitButton: {
-        marginTop: theme.spacing(2),
-        backgroundColor: theme.palette.primary.main, // Use your theme's primary color
-        color: '#fff', // White text color
-        '&:hover': {
-          backgroundColor: theme.palette.primary.dark, // Darken the button on hover
-        },
-        // Add padding and other styles as needed
-        padding: theme.spacing(1, 4),
-        // Center the button by applying margin auto on horizontal sides
-        margin: `${theme.spacing(2)}px auto ${theme.spacing(2)}px`,
-        display: 'block', // Block display to fill the width of the container
-      },
-      buttonContainer: {
-        display: 'flex', // Set display to flex to use flexbox properties
-        justifyContent: 'flex-end', // Align items to the end of the flex container (right side)
-      },
+// Styled components
+const SubmitButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  backgroundColor: theme.palette.primary.main,
+  color: '#fff',
+  '&:hover': {
+    backgroundColor: theme.palette.primary.dark,
+  },
+  padding: theme.spacing(1, 4),
+  margin: `${theme.spacing(2)}px auto ${theme.spacing(2)}px`,
+  display: 'block',
 }));
 
+const ButtonContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-end',
+});
+
 const ListItemSelection = ({ selectedCategory, description, visibility, title }) => {
-  const {token, user} = useSelector((state) => state.auth);
-  const classes = useStyles();
+  const { token, user } = useSelector((state) => state.auth);
   const [selectedItems, setSelectedItems] = useState([]);
   const categoryId = selectedCategory._id;
-  const userId = user._id
+  const userId = user._id;
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-
-  const formatListItems = (items) => {
-    return items.map(item => {
-      return { name: item.title }; // Assuming 'title' is the property you want to use as 'name'
-    });
-  };
-
-  const formattedListItems = formatListItems(selectedItems);
-
-
+  const formatListItems = (items) => items.map(item => ({ name: item.title }));
 
   const handlePublish = async () => {
-    // Combine the list info and selected items into one object
     const listData = {
       title,
       userId,
-      categoryId, // from props
-      description, // from props
-      visibility, // from props
-      listItems: formattedListItems, // from local state
+      categoryId,
+      description,
+      visibility,
+      listItems: formatListItems(selectedItems),
     };
 
-
-    try{
-      console.log(listData.listItems)
-      const response = await createNewList(listData, token ); // replace with your actual API call
-      setShowSuccessModal(true)
-    } catch{
-      console.log("error while publishing list")
+    try {
+      console.log(listData.listItems);
+      await createNewList(listData, token);
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.log("Error while publishing list", error);
     }
-    
   };
 
   const handleCloseModal = () => {
-    setShowSuccessModal(false); // Correctly close the modal
+    setShowSuccessModal(false);
   };
 
-
   return (
-    <Box className={classes.container}>
-        <WikipediaSearch 
-        setSelectedItems={setSelectedItems} 
-        selectedItems={selectedItems || []}   
-        category={selectedCategory.categoryName}  
- />
-         {showSuccessModal && (
-        <ListCreatedSuccess 
-          open={showSuccessModal} // Use showSuccessModal as the value for open
-          handleClose={handleCloseModal} 
+    <Box>
+      <WikipediaSearch
+        setSelectedItems={setSelectedItems}
+        selectedItems={selectedItems || []}
+        category={selectedCategory.categoryName}
+      />
+      {showSuccessModal && (
+        <ListCreatedSuccess
+          open={showSuccessModal}
+          handleClose={handleCloseModal}
         />
       )}
-
-
-        <div className={classes.buttonContainer}>
-            <Button
-                variant="contained"
-                className={classes.submitButton}
-                onClick={handlePublish}
-            >
-                Publish
-            </Button>
-        </div>  
+      <ButtonContainer>
+        <SubmitButton variant="contained" onClick={handlePublish}>
+          Publish
+        </SubmitButton>
+      </ButtonContainer>
     </Box>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, List, ListItem, ListItemAvatar, Avatar, TextField, Button, IconButton, Menu, MenuItem } from '@material-ui/core';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { Paper, Typography, List, ListItem, ListItemAvatar, Avatar, TextField, Button, IconButton, Menu, MenuItem } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { fetchCommentsByListId, postComment, deleteComment } from '../../api/SocialActions/SocialActions'; // Include deleteComment
 import useStyles from '../../styles/feed/commentWindow';
 import { useSelector } from 'react-redux'; // Import useSelector

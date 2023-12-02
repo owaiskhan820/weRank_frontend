@@ -3,7 +3,6 @@ import {
   Box,
   TextField,
   Button,
-  makeStyles,
   Typography,
   Radio,
   RadioGroup,
@@ -14,7 +13,7 @@ import {
   MenuItem,
   CircularProgress,
   InputLabel
-} from '@material-ui/core';
+} from '@mui/material';
 import { fetchAllCategories } from '../../api/CreateList/createList';
 import ListItemSelection from './ListItemSelect'; // Make sure to import the ListItemSelection component
 import { useStyles } from '../../styles/CreateList/ListFormStyes';

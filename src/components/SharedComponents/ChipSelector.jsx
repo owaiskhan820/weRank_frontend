@@ -1,29 +1,22 @@
-// ChipSelector.js
 import React from 'react';
-import { Chip, FormControl, Input, InputLabel, MenuItem, Select, makeStyles } from '@material-ui/core';
+import { Chip, FormControl, Input, InputLabel, MenuItem, Select, styled } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    margin: theme.spacing(1),
-    width: '100%',
-  },
-  chip: {
-    margin: 2,
-  },
-  noLabel: {
-    marginTop: theme.spacing(3),
-  },
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  margin: theme.spacing(1),
+  width: '100%',
 }));
 
-const ChipSelector = ({ label, value, options, onChange, onDelete }) => {
-  const classes = useStyles();
+const StyledChip = styled(Chip)({
+  margin: 2,
+});
 
+const ChipSelector = ({ label, value, options, onChange, onDelete }) => {
   const handleDelete = (item) => {
     onDelete(item);
   };
 
   return (
-    <FormControl className={classes.formControl}>
+    <StyledFormControl>
       <InputLabel>{label}</InputLabel>
       <Select
         multiple
@@ -35,11 +28,10 @@ const ChipSelector = ({ label, value, options, onChange, onDelete }) => {
             {selected.map((value) => {
               const label = options.find((option) => option._id === value).categoryName;
               return (
-                <Chip
+                <StyledChip
                   key={value}
                   label={label}
                   onDelete={() => handleDelete(value)}
-                  className={classes.chip}
                 />
               );
             })}
@@ -52,7 +44,7 @@ const ChipSelector = ({ label, value, options, onChange, onDelete }) => {
           </MenuItem>
         ))}
       </Select>
-    </FormControl>
+    </StyledFormControl>
   );
 };
 
