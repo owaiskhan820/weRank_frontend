@@ -1,18 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import {  getWatchlistByUserId } from '../../api/profile/profile'; // Update the import path
-import FeedItem from '../Feed/FeedItem'; // Update the import path
-import LoadingModal from '../../shared/LoadingModal/LoadingModal'; // Update the import path
-import useStyles from '../../styles/feed/FeedStyles'; // Update the import path
+import { getWatchlistByUserId } from '../../api/profile/profile';
+import FeedItem from '../Feed/FeedItem';
+import LoadingModal from '../../shared/LoadingModal/LoadingModal';
+import { styled } from '@mui/material';
+
+// Styled component for feed container
+const FeedContainer = styled('div')(({ theme }) => ({
+  maxHeight: 'calc(100vh - 100px)',
+  overflowY: 'auto',
+  '&::-webkit-scrollbar': {
+    display: 'none',
+  },
+  msOverflowStyle: 'none',
+  scrollbarWidth: 'none',
+}));
 
 const Watchlist = () => {
   const [myLists, setMyLists] = useState([]);
   const [loading, setLoading] = useState(false);
-  const classes = useStyles();
   const { user, token } = useSelector((state) => state.auth);
 
   useEffect(() => {
-
     setLoading(true);
     getWatchlistByUserId(user._id)
       .then((lists) => {
@@ -30,20 +39,20 @@ const Watchlist = () => {
   }
 
   return (
-    <div className={classes.feedContainer}>
+    <FeedContainer>
       {myLists.length > 0 ? (
         myLists.map((list) => (
           <FeedItem
             key={list._id}
             feedItem={list}
-            userCredentials={{ [user._id]: user }} // Assuming you have user details in the user object from the state
+            userCredentials={{ [user._id]: user }}
             token={token}
           />
         ))
       ) : (
         <div>You have no lists.</div>
       )}
-    </div>
+    </FeedContainer>
   );
 };
 

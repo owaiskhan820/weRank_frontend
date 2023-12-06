@@ -72,28 +72,28 @@ export const isListInWatchlist = async (listId, token) => {
 };
 
 
-// Function to upvote or downvote a list
 export const voteOnList = async (listId, voteType, token) => {
-    try {
-        const response = await fetch(`${API_BASE_URL}/list/vote/?token=${token}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ voteType, listId }),
-        });
+  try {
+      const response = await fetch(`${API_BASE_URL}/list/vote/?token=${token}`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ voteType, listId }),
+      });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+      if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+      }
 
-        return await response.json();
-    } catch (error) {
-        console.error('Error voting on list:', error);
-        throw error;
-    }
+      const result = await response.json();
+      // The result now includes 'message' and 'updatedVoteStatus'
+      return result;
+  } catch (error) {
+      console.error('Error voting on list:', error);
+      throw error;
+  }
 };
-
 
 export const getUserVoteType = async (listId, token) => {
   try {
@@ -106,7 +106,7 @@ export const getUserVoteType = async (listId, token) => {
       });
 
       if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response}`);
+          throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       const voteInfo = await response.json();
@@ -116,6 +116,7 @@ export const getUserVoteType = async (listId, token) => {
       throw error;
   }
 };
+
 
 
 export const fetchCommentsByListId = async (listId, token) => {

@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { getSuggestedUsers } from '../../api/user/User';
 import { getSuggestedLists } from '../../api/List/List';
 import ListIcon from '@mui/icons-material/List';
+import FollowButton from '../Follow/FollowButton';
 
 const drawerWidth = 240; // The width for your right sidebar.
 
@@ -19,9 +20,7 @@ const SidebarSection = styled(Paper)(({ theme }) => ({
   },
 }));
 
-const FollowButton = styled(Button)({
-  marginLeft: 'auto',
-});
+
 
 const StyledListItem = styled(ListItem)(({ theme }) => ({
   padding: theme.spacing(1, 0),
@@ -69,8 +68,8 @@ export const RightSidebar = () => {
                                 <Avatar src={user.profilePicture || '/path-to-default-avatar.png'} />
                             </ListItemAvatar>
                             <ListItemText primary={user.username} secondary={`@${user.username.replace(/\s+/g, '')}`} />
-                            <FollowButton variant="outlined" size="small">Follow</FollowButton>
-                        </StyledListItem>
+                            <FollowButton targetUserId= {user.userId}>Follow</FollowButton>
+                        </StyledListItem> 
                     ))}
                     <StyledListItem button>
                         <ListItemText primary="Show more" />

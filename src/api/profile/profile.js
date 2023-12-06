@@ -171,5 +171,25 @@ export const getProfileByUserId = async (userId) => {
   }
 };
 
+export const fetchCategoryById = async (categoryId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/category/getCategory/${categoryId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        // Include authorization header if needed
+      }
+    });
 
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const profileData = await response.json();
+    return profileData;
+  } catch (error) {
+    console.error('Error fetching profile data:', error);
+    throw error;
+  }
+};
 

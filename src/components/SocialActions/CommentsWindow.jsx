@@ -1,16 +1,62 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, List, ListItem, ListItemAvatar, Avatar, TextField, Button, IconButton, Menu, MenuItem } from '@mui/material';
+import { Paper, Typography, List, ListItem, ListItemAvatar, Avatar, TextField, Button, IconButton, Menu, MenuItem, styled } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { fetchCommentsByListId, postComment, deleteComment } from '../../api/SocialActions/SocialActions'; // Include deleteComment
-import useStyles from '../../styles/feed/commentWindow';
 import { useSelector } from 'react-redux'; // Import useSelector
+
+// Styled components
+const AvatarStyled = styled(Avatar)(({ theme }) => ({
+  backgroundColor: theme.palette.secondary.main,
+}));
+
+const CommentPaper = styled(Paper)(({ theme }) => ({
+  maxHeight: '100%',
+  padding: theme.spacing(2),
+}));
+
+const CommentBubble = styled('div')(({ theme }) => ({
+  padding: theme.spacing(1),
+  backgroundColor: '#f0f0f0',
+  borderRadius: '16px',
+  marginLeft: theme.spacing(2),
+  marginBottom: theme.spacing(1),
+  maxWidth: '80%',
+  position: 'relative',
+  '&:after': {
+    content: '""',
+    position: 'absolute',
+    top: '50%',
+    left: '-10px',
+    width: '0',
+    height: '0',
+    border: '5px solid transparent',
+    borderRightColor: '#f0f0f0',
+    transform: 'translateY(-50%)',
+  },
+}));
+
+const ListItemStyled = styled(ListItem)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'flex-start',
+  width: '100%',
+}));
+
+const InputArea = styled('div')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  marginTop: theme.spacing(2),
+}));
+
+const PostButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(1),
+}));
+
 
 const CommentWindow = ({ isVisible, listId, token, onCommentAdded}) => {
   const [comments, setComments] = useState([]);
   const [newCommentText, setNewCommentText] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedCommentId, setSelectedCommentId] = useState(null);
-  const classes = useStyles();
   const loggedInUserId = useSelector((state) => state.auth.user); // Replace 'state.auth.userId' with the actual path in your Redux store
 
   useEffect(() => {
@@ -59,14 +105,14 @@ const CommentWindow = ({ isVisible, listId, token, onCommentAdded}) => {
   };
 
   return (
-    <Paper className={classes.commentPaper}>
+    <CommentPaper>
       <List>
         {comments.map((comment) => (
-          <ListItem key={comment._id} className={classes.listItem}>
+          <ListItemStyled key={comment._id}>
             <ListItemAvatar>
-              <Avatar className={classes.avatar}>{comment.userId.username[0]}</Avatar>
+              <AvatarStyled>{comment.userId.username[0]}</AvatarStyled>
             </ListItemAvatar>
-            <div className={classes.commentBubble}>
+            <CommentBubble>
               <Typography variant="subtitle2">{comment.userId.username}</Typography>
               <Typography>{comment.text}</Typography>
               <Typography variant="caption" color="textSecondary">
@@ -84,8 +130,8 @@ const CommentWindow = ({ isVisible, listId, token, onCommentAdded}) => {
                   <MoreVertIcon />
                 </IconButton>
               )}
-            </div>
-          </ListItem>
+            </CommentBubble>
+          </ListItemStyled>
         ))}
       </List>
       <Menu
@@ -97,7 +143,7 @@ const CommentWindow = ({ isVisible, listId, token, onCommentAdded}) => {
       >
         <MenuItem onClick={handleDelete}>Delete</MenuItem>
       </Menu>
-      <div className={classes.inputArea}>
+      <InputArea>
         <TextField
           label="Write a comment..."
           fullWidth
@@ -108,17 +154,17 @@ const CommentWindow = ({ isVisible, listId, token, onCommentAdded}) => {
           value={newCommentText}
           onChange={(e) => setNewCommentText(e.target.value)}
         />
-        <Button
+        <PostButton
           variant="contained"
           color="primary"
           onClick={handlePostComment}
-          className={classes.postButton}
         >
           Post Comment
-        </Button>
-      </div>
-    </Paper>
+        </PostButton>
+      </InputArea>
+    </CommentPaper>
   );
+  
 };
 
 export default CommentWindow;

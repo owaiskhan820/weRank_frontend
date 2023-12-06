@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux'; // Import useSelector
 
 
 const ContributeModal = ({ title, items, isOpen, onClose }) => {
+    console.log(items)
     const token = useSelector((state) => state.auth.token); // Replace 'state.auth.userId' with the actual path in your Redux store
 
     const [leftItems, setLeftItems] = useState(items);
@@ -89,12 +90,13 @@ const ContributeModal = ({ title, items, isOpen, onClose }) => {
     // renderItem function adapted from file 2
     const renderItem = (item, index, isRight) => (
         <ListItem button key={item.id} onClick={() => handleItemClick(item, isRight)}>
-            <ListItemText primary={`${index + 1}. ${item.label.name}`} />
+            <ListItemText primary={`${index + 1}. ${item.label}`} />
         </ListItem>
     );
 
     return (
         <Modal open={isOpen} onClose={handleClose}>
+            
             <DragDropContext onDragEnd={onDragEnd}>
                 <Paper sx={style} elevation={5}>
                     <Box display="flex" justifyContent="space-between" alignItems="center" p={1}>
@@ -137,7 +139,7 @@ const ContributeModal = ({ title, items, isOpen, onClose }) => {
                                                         {...provided.dragHandleProps}
                                                         style={provided.draggableProps.style}
                                                     >
-                                                        <ListItemText primary={`${index + 1}. ${item.label.name}`} />
+                                                        <ListItemText primary={`${index + 1}. ${item.label}`} />
                                                     </ListItem>
                                                 )}
                                             </Draggable>
