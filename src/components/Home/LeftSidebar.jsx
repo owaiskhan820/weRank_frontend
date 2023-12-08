@@ -1,17 +1,15 @@
-import React, {useState} from 'react';
+import React, { useEffect } from 'react';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, useTheme, useMediaQuery, styled } from '@mui/material';
-import Logo from '../../images/werankLogo.png';  
+import Logo from '../../images/werankLogo.png';
+import { IoNotificationsSharp, IoPersonSharp, IoLogOut } from "react-icons/io5";
 import { IoIosCreate } from "react-icons/io";
-import { FaHome } from "react-icons/fa";
-import { IoNotificationsSharp } from "react-icons/io5";
-import { FaBookmark } from "react-icons/fa";
-import { IoPersonSharp } from "react-icons/io5";
-import { IoLogOut } from "react-icons/io5";
+import { FaHome, FaBookmark } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../redux/auth/authSlice';
+import { fetchUnreadNotifications } from '../../redux/notifications/notificationSlice';
 
+ 
 const drawerWidth = 250; // Width of the sidebar
 
 // Styled components
@@ -46,18 +44,48 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
     '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
       color: theme.palette.common.white,
     },
+    // Correct way to reference another styled component within a rule
+    [`& ${IconStyle}`]: {
+      color: 'white',
+    },
   },
 }));
+
+const NotificationCount = styled('span')({
+  font: 'bold',
+  backgroundColor: 'red',
+  color: 'white',
+  borderRadius: '50%',
+  padding: '2px', // Adjust padding to suit your design
+  fontSize: '0.8em', // Adjust font size as needed
+  marginLeft: '5px',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '20px', // Adjust height and width to make it a circle
+  minWidth: '20px',
+  lineHeight: '20px', // Align text vertically
+});
 
 export const LeftSidebar = ({ onSelectionChange, onProfileSelected }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
-  const user  = useSelector((state)=> state.auth.user)
-  const userId = user._id
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const refreshInterval = 30000; 
 
+  const unreadCount = useSelector(state => state.notifications.unreadCount);
 
+  useEffect(() => {
+    console.log("refreshed")
+    dispatch(fetchUnreadNotifications());
+    
+    const intervalId = setInterval(() => {
+      dispatch(fetchUnreadNotifications());
+    }, refreshInterval);
+
+    return () => clearInterval(intervalId);
+  }, [dispatch, refreshInterval]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -73,7 +101,6 @@ export const LeftSidebar = ({ onSelectionChange, onProfileSelected }) => {
       variant={isMobile ? 'temporary' : 'permanent'}
       anchor="left"
       open={!isMobile}
-      // Add onClose handler if needed
     >
       <LogoContainer>
         <LogoImage src={Logo} alt="Logo" />
@@ -83,21 +110,23 @@ export const LeftSidebar = ({ onSelectionChange, onProfileSelected }) => {
           { text: 'Home', icon: <FaHome size="1.25em" />, view: 'feed' },
           { text: 'Profile', icon: <IoPersonSharp size="1.25em"/>, action: handleProfileClick },
           { text: 'Create List', icon: <IoIosCreate size="1.25em" />, view: 'createList'},
-          { text: 'Notifications', icon: <IoNotificationsSharp size="1.25em" />, view: 'notifications' },
-          { text: 'Watchlist', icon: <FaBookmark  /> },
+          { text: 'Notifications', icon: <IoNotificationsSharp size="1.25em" />, view: 'notifications', count: unreadCount },
+          { text: 'Watchlist', icon: <FaBookmark size="1.25em" /> },
           { text: 'Logout', icon: <IoLogOut size="1.25em" />, action: handleLogout },
-          // ... other menu items
-        ].map((item, index) => (
+        ].map((item) => (
           <StyledListItem
-          button 
-          key={item.text}
-          onClick={item.action || (() => onSelectionChange(item.view))}
-        >
-          <ListItemIcon><IconStyle>{item.icon}</IconStyle></ListItemIcon>
-          <ListItemText primary={item.text} />
-        </StyledListItem>
-      ))}
-    </List>
-  </StyledDrawer>
+            button 
+            key={item.text}
+            onClick={item.action || (() => onSelectionChange(item.view))}
+          >
+            <ListItemIcon><IconStyle>{item.icon}</IconStyle></ListItemIcon>
+            <ListItemText primary={item.text} />
+            {item.text === 'Notifications' && item.count > 0 && (
+              <NotificationCount>{item.count}</NotificationCount>
+            )}
+          </StyledListItem>
+        ))}
+      </List>
+    </StyledDrawer>
   );
 }

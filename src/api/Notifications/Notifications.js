@@ -4,7 +4,7 @@ const API_BASE_URL = 'http://localhost:3000/api/v1/notify'; // Your API's base U
 
 export const getNotifications = async (token) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/getNotifications?token=${encodeURIComponent(token)}`, {
+      const response = await fetch(`${API_BASE_URL}/getNotifications?token=${token}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -24,7 +24,7 @@ export const getNotifications = async (token) => {
   };
   export const getUnreadNotifications = async (token) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/Notifications/unread?token=${encodeURIComponent(token)}`, {
+      const response = await fetch(`${API_BASE_URL}/Notifications/unread?token=${token}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ export const getNotifications = async (token) => {
   };
 
   export const markNotificationAsRead = async (notificationId, token) => {
-    const url = `${API_BASE_URL}/notifications/${notificationId}/read`;
+    const url = `${API_BASE_URL}/notifications/read/${notificationId}?token=${token}`;
   
     try {
       const response = await fetch(url, {

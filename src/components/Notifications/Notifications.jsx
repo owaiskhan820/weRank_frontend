@@ -1,51 +1,61 @@
 import React, { useState, useEffect } from 'react';
-import { getNotifications, getUnreadNotifications, markNotificationAsRead } from '../../api/Notifications/Notifications';
-import { List, ListItem, ListItemText, Divider } from '@mui/material';
+import { getNotifications, markNotificationAsRead } from '../../api/Notifications/Notifications';
+import { List, ListItem, ListItemText, Divider, styled } from '@mui/material';
 import { useSelector } from 'react-redux';
-const Notifications = () => {
 
+const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
-  const [unreadNotifications, setUnreadNotifications] = useState([]);
-  const { user, token } = useSelector((state) => state.auth);
+  const { token } = useSelector((state) => state.auth);
 
   useEffect(() => {
-
     const fetchNotifications = async () => {
       try {
         const allNotifications = await getNotifications(token);
-        const unread = await getUnreadNotifications(token);
         setNotifications(allNotifications);
-        setUnreadNotifications(unread);
       } catch (error) {
         console.error('Error fetching notifications:', error);
       }
     };
 
     fetchNotifications();
-  }, []);
+  }, [token]);
 
   const handleMarkAsRead = async (notificationId) => {
     try {
-      await markNotificationAsRead(notificationId, 'YOUR_USER_TOKEN');
-      // Update notifications state as needed
+      await markNotificationAsRead(notificationId, token);
+      setNotifications(notifications.map(notification => 
+        notification._id === notificationId ? { ...notification, readStatus: true } : notification
+      ));
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }
   };
 
+  // Styled component for ListItem
+  const StyledListItem = styled(ListItem)(({ theme, readstatus }) => ({
+    backgroundColor: readstatus ? 'transparent' : 'lightblue',
+    '&:hover': {
+      backgroundColor: readstatus ? 'transparent' : '#add8e6', // Lighter blue on hover
+    },
+  }));
+
   return (
     <List>
       {notifications.map(notification => (
-        <React.Fragment key={notification._id}> {/* Use _id as the unique key */}
-            <ListItem button onClick={() => handleMarkAsRead(notification._id)}>
+        <React.Fragment key={notification._id}>
+          <StyledListItem
+            button 
+            readstatus={notification.readStatus}
+            onClick={() => handleMarkAsRead(notification._id)}
+          >
             <ListItemText 
-                primary={notification.message.title}  // Accessing title from message object
-                secondary={notification.message.body} // Accessing body from message object
+              primary={notification.message.title}
+              secondary={notification.message.body}
             />
-            </ListItem>
-            <Divider />
+          </StyledListItem>
+          <Divider />
         </React.Fragment>
-        ))}
+      ))}
     </List>
   );
 };

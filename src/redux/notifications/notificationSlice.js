@@ -13,7 +13,8 @@ export const fetchUnreadNotifications = createAsyncThunk(
     const { auth } = getState();
     if (auth?.token) {
       const response = await getUnreadNotificationsApi(auth.token);
-      return response.data;
+      console.log(response)
+      return response;
     }
   }
 );
