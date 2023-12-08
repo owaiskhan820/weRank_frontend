@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, useTheme, useMediaQuery, styled } from '@mui/material';
 import Logo from '../../images/werankLogo.png';  
 import { IoIosCreate } from "react-icons/io";
@@ -6,7 +6,11 @@ import { FaHome } from "react-icons/fa";
 import { IoNotificationsSharp } from "react-icons/io5";
 import { FaBookmark } from "react-icons/fa";
 import { IoPersonSharp } from "react-icons/io5";
+import { IoLogOut } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../redux/auth/authSlice';
 
 const drawerWidth = 250; // Width of the sidebar
 
@@ -45,13 +49,23 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
   },
 }));
 
-export const LeftSidebar = ({ onSelectionChange }) => {
+export const LeftSidebar = ({ onSelectionChange, onProfileSelected }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
+  const user  = useSelector((state)=> state.auth.user)
+  const userId = user._id
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleMenuItemClick = (path) => {
-    navigate(path);
+
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login');
+  };
+
+  const handleProfileClick = () => {
+    onProfileSelected();
   };
 
   return (
@@ -67,22 +81,23 @@ export const LeftSidebar = ({ onSelectionChange }) => {
       <List>
         {[
           { text: 'Home', icon: <FaHome size="1.25em" />, view: 'feed' },
-          { text: 'Profile', icon: <IoPersonSharp size="1.25em"/>,view: 'profile' },
+          { text: 'Profile', icon: <IoPersonSharp size="1.25em"/>, action: handleProfileClick },
           { text: 'Create List', icon: <IoIosCreate size="1.25em" />, view: 'createList'},
           { text: 'Notifications', icon: <IoNotificationsSharp size="1.25em" />, view: 'notifications' },
           { text: 'Watchlist', icon: <FaBookmark  /> },
+          { text: 'Logout', icon: <IoLogOut size="1.25em" />, action: handleLogout },
           // ... other menu items
         ].map((item, index) => (
           <StyledListItem
-            button 
-            key={item.text}
-            onClick={() => onSelectionChange(item.view)}
-          >
-            <ListItemIcon><IconStyle>{item.icon}</IconStyle></ListItemIcon>
-            <ListItemText primary={item.text} />
-          </StyledListItem>
-        ))}
-      </List>
-    </StyledDrawer>
+          button 
+          key={item.text}
+          onClick={item.action || (() => onSelectionChange(item.view))}
+        >
+          <ListItemIcon><IconStyle>{item.icon}</IconStyle></ListItemIcon>
+          <ListItemText primary={item.text} />
+        </StyledListItem>
+      ))}
+    </List>
+  </StyledDrawer>
   );
 }

@@ -1,7 +1,6 @@
   import React, { useState, useEffect, Suspense} from 'react';
   import { List, Typography, Grid, ListItem} from '@mui/material';
   import UserAvatar from '../User/UserAvatar';
-  import SocialActions from '../../components/SocialActions/SocialActions';
   import LoadingModal from '../../shared/LoadingModal/LoadingModal';
   import CommentWindow from '../SocialActions/CommentsWindow';
   import { isListInWatchlist, getUserVoteType } from '../../api/SocialActions/SocialActions';
@@ -16,16 +15,22 @@
     ScoreBox, ItemNumber
   } from '../../components/Feed/styles';
   import CategoryChip from '../SharedComponents/categoryChip'; // Import the new component
-  import {fetchCategoryById} from '../../api/profile/profile'
+  import { useSelector } from 'react-redux';
+  const SocialActions = React.lazy(() => import('../../components/SocialActions/SocialActions'));
 
-  const FeedItem = ({ feedItem, userCredentials, token }) => {
+
+
+
+
+  const FeedItem = ({ feedItem, userCredentials, listCategory }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isWatchlisted, setIsWatchlisted] = useState(false);
     const [voteStatus, setVoteStatus] = useState({ upvoted: false, downvoted: false });
     const [showComments, setShowComments] = useState(false);
     const [listScore, setListScore] = useState(null);
-    const [categoryNames, setCategoryNames] = useState({});
-
+    const {user, token} = useSelector((state) => state.auth)
+    const [isDataReady, setIsDataReady] = useState(false);
+    const userId = user._id
 
     const toggleComments = () => {
       setShowComments(!showComments);
@@ -43,51 +48,26 @@
       }
     };
 
+
     useEffect(() => {
      const fetchData = async () => {
-      setIsLoading(true)
-       try {
-         const status = await isListInWatchlist(feedItem._id, token);
-         setIsWatchlisted(status);
-   
-         const fetchVoteStatus = async () => {
-          try {
-            const status = await getUserVoteType(feedItem._id, token);
-            setVoteStatus({
-              upvoted: status.voteType.upvoted,
-              downvoted: status.voteType.downvoted
-            });
-          } catch (error) {
-            console.error('Error fetching vote status:', error);
-          }
-        };
-        fetchVoteStatus();
+      try {
+        const status = await isListInWatchlist(feedItem._id, userId);
+        setIsWatchlisted(status);
+    
+        const voteStatus = await getUserVoteType(feedItem._id, userId);
+        setVoteStatus({
+          upvoted: voteStatus.voteType.upvoted,
+          downvoted: voteStatus.voteType.downvoted
+        });
+        await fetchListScore(feedItem._id);
+        setIsDataReady(true);
 
-         const score = await getListScore(feedItem._id);
-         setListScore(score);
-        
-         // Fetch category name
-         if (feedItem.categoryId && !categoryNames[feedItem.categoryId]) {
-           try {
-             const category = await fetchCategoryById(feedItem.categoryId);
-             setCategoryNames(prevNames => ({
-               ...prevNames,
-               [feedItem.categoryId]: category ? category.response.category.categoryName : 'Unknown'
-             }));
-           } catch (err) {
-             console.error('Error fetching category:', err);
-             setCategoryNames(prevNames => ({
-               ...prevNames,
-               [feedItem.categoryId]: 'Unknown'
-             }));
-           }
-         }
-       } catch (error) {
-         console.error("Error in fetchData:", error);
-       } finally {
-         setIsLoading(false);
-       }
-     };
+
+      } catch (error) {
+        console.error("Error in fetchData:", error);
+      } 
+    };
    
      if (feedItem && feedItem._id) {
        fetchData();
@@ -101,11 +81,10 @@
       hour12: true
     });
 
-    if (isLoading) {
-      return <LoadingModal />; 
-    }
 
     return (
+      <>
+      {isLoading ? <LoadingModal/> : 
       <StyledCard>
         <StyledCardHeader
           avatar={<UserAvatar userId={feedItem.userId} />}
@@ -122,11 +101,15 @@
             </Grid>
           }
         />
-        <ScoreBox sx={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
-        <Typography variant="h6" component="div">
-          {listScore !== null ? listScore.toFixed(2) : "0.00"}
-        </Typography>
-      </ScoreBox>
+
+        <Suspense fallback={<div>Loading Score...</div>}>
+          {isDataReady && <ScoreBox sx={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
+            <Typography variant="h6" component="div">
+              {listScore !== null ? listScore.toFixed(2) : "0.00"}
+            </Typography>
+          </ScoreBox>}
+        </Suspense>
+
         <StyledCardContent>
           <ListTitle variant="h6">
             {feedItem.title}
@@ -137,25 +120,30 @@
                 key={idx}
                 sx={{ padding: '10px 0' }}
               >
-                <ItemNumber>{idx + 1}.</ItemNumber> {/* Add numbering next to each item */}
+                <ItemNumber>{idx + 1}.</ItemNumber>  
                 <CategoryChip 
-                  category={categoryNames[feedItem.categoryId] || 'Unknown'}                  
+                  category={listCategory}             
                   label={item.name} 
                 />
               </ListItem>
             ))}
-      </List>
-          {isLoading ? <LoadingModal /> : (
-            <SocialActions 
-              listId={feedItem._id} 
-              isInitiallyWatchlisted={isWatchlisted}
-              initialVoteType={voteStatus}
-              token={token}
-              listItems={feedItem}
-              onToggleComments={toggleComments}
-              onActionComplete={fetchListScore}
-            />
-          )}
+      </List> 
+          {!isDataReady ? <LoadingModal/> : (
+            <Suspense fallback={<div>Loading Social Actions...</div>}>
+
+              <SocialActions 
+                listId={feedItem._id} 
+                isInitiallyWatchlisted={isWatchlisted}
+                initialVoteType={voteStatus}
+                token={token}
+                listItems={feedItem}
+                onToggleComments={toggleComments}
+                onActionComplete={fetchListScore}
+              />
+              
+            </Suspense>
+
+            )}
           {showComments && 
             <CommentWindow 
               isVisible={showComments}
@@ -165,7 +153,8 @@
             />
           }
         </StyledCardContent>
-      </StyledCard>
+      </StyledCard>}
+      </>
     );
       };  
   export default FeedItem;

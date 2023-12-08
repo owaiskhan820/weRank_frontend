@@ -13,6 +13,7 @@ const useFetchFeedData = (selectedTab, token) => {
           : await fetchFeedByFollowing(token);
 
         setFeedData(data);
+        console.log(data)
         
       } catch (error) {
         console.error(error);

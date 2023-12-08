@@ -7,7 +7,7 @@ const ListCreatedSuccess = ({ open, handleClose }) => {
 
   const handleGoHome = () => {
     handleClose(); // Close the modal first
-    navigate('/'); // Navigate to home page
+    window.location.reload(); // Reload the current page
   };
 
   return (
@@ -17,7 +17,7 @@ const ListCreatedSuccess = ({ open, handleClose }) => {
         Your list has been created successfully.
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleGoHome} color="primary">
+        <Button onClick={handleGoHome} color="primary" type= "button">
           Go to Home
         </Button>
       </DialogActions>

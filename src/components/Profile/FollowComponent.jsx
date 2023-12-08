@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { getFollowingByUserId, getFollowersByUserId } from '../../api/profile/profile'; // Import your API calls
 import { Avatar, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
-
-const FollowComponent = ({ userId, token, type }) => {
+import FollowButton from '../Follow/FollowButton';
+const FollowComponent = ({ userId, type }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const defaultAvatar = '/path/to/default/avatar.jpg'; // Replace with your default avatar image path
@@ -27,7 +26,7 @@ const FollowComponent = ({ userId, token, type }) => {
     };
 
     fetchData();
-  }, [userId, token, type]);
+  }, [userId, type]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -45,6 +44,7 @@ const FollowComponent = ({ userId, token, type }) => {
               primary={`${user.firstName} ${user.lastName}`} 
               secondary={`@${user.username}`} // Username as subtext with @ sign
             />
+            <FollowButton targetUserId={user.userId}/>
           </ListItem>
         ))
       ) : (

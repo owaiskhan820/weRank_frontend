@@ -20,13 +20,17 @@ const SidebarSection = styled(Paper)(({ theme }) => ({
   },
 }));
 
-
-
 const StyledListItem = styled(ListItem)(({ theme }) => ({
-  padding: theme.spacing(1, 0),
-}));
+    padding: theme.spacing(1, 0),
+    '&:hover': {
+      cursor: 'pointer', // Add this line to change the cursor on hover
+      // ... other hover styles ...
+    },
+  }));
 
-export const RightSidebar = () => {
+
+
+export const RightSidebar = ({ onUserClick }) => {
     const userId = useSelector(state => state.auth.user._id);
     const [displayedUsers, setDisplayedUsers] = useState([]);
     const [displayedLists, setDisplayedLists] = useState([]);
@@ -55,6 +59,11 @@ export const RightSidebar = () => {
         fetchUsers();
         fetchLists();
     }, [userId]);
+
+    const handleUsernameClick = (clickedUserId) => {
+        console.log(clickedUserId)
+        onUserClick('profile', clickedUserId);
+    };
     
     return (
         <div>
@@ -63,11 +72,11 @@ export const RightSidebar = () => {
                 <Typography variant="h6" gutterBottom>Who to follow</Typography>
                 <List>
                     {displayedUsers.map((user, index) => (
-                        <StyledListItem key={index}>
-                            <ListItemAvatar>
+                        <StyledListItem key={index} >
+                            <ListItemAvatar onClick={() => handleUsernameClick(user.userId)}>
                                 <Avatar src={user.profilePicture || '/path-to-default-avatar.png'} />
                             </ListItemAvatar>
-                            <ListItemText primary={user.username} secondary={`@${user.username.replace(/\s+/g, '')}`} />
+                            <ListItemText primary={user.firstName +" "+user.lastName} secondary={`@${user.username.replace(/\s+/g, '')}`} />
                             <FollowButton targetUserId= {user.userId}>Follow</FollowButton>
                         </StyledListItem> 
                     ))}
@@ -86,7 +95,17 @@ export const RightSidebar = () => {
                             <ListItemAvatar>
                                 <Avatar><ListIcon /></Avatar>
                             </ListItemAvatar>
-                            <ListItemText primary={list.listTitle} secondary={`@${list.username}`} />
+                            <ListItemText 
+                            primary={list.listTitle} 
+                            secondary={
+                                <span 
+                                onClick={() => handleUsernameClick(list.userId)}
+                                style={{ cursor: 'pointer' }}
+                                >
+                                @{list.username}
+                                </span>
+                            } 
+                            />
                         </StyledListItem>
                     ))}
                     <StyledListItem button>

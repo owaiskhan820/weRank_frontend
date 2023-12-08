@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { getListByUserId } from '../../api/profile/profile';
 import FeedItem from '../Feed/FeedItem';
 import LoadingModal from '../../shared/LoadingModal/LoadingModal';
 import { styled } from '@mui/material';
+import useUserCredentials from '../../hooks/User/useUserCredentials'; // Import the custom hook
+import useFetchProfileData from '../../hooks/profile/useFetchProfileData'; // Import the custom hook
 
 // Styled component for feed container
 const FeedContainer = styled('div')(({ theme }) => ({
@@ -16,44 +16,38 @@ const FeedContainer = styled('div')(({ theme }) => ({
   scrollbarWidth: 'none',
 }));
 
-const MyLists = () => {
-  const [myLists, setMyLists] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const { user, token } = useSelector((state) => state.auth);
-
+const Watchlist = ({ userId }) => {
+  const { data, isLoading } = useFetchProfileData(userId, 'myLists');
+  const { userCredentials, fetchUserCredentials } = useUserCredentials();
+  console.log("myLists", data)
   useEffect(() => {
-    setLoading(true);
-    getListByUserId(user._id, token)
-      .then((lists) => {
-        setMyLists(lists);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error fetching my lists:', error);
-        setLoading(false);
-      });
-  }, [user._id, token]);
+    // Fetch user credentials for each list's user
+    data.forEach(list => {
+      fetchUserCredentials(list.userId);
+    });
+  }, [data, fetchUserCredentials]);
 
-  if (loading) {
+  if (isLoading) {
     return <LoadingModal />;
   }
 
   return (
     <FeedContainer>
-      {myLists.length > 0 ? (
-        myLists.map((list) => (
+      {data.length > 0 ? (
+        data.map((list) => (
           <FeedItem
             key={list._id}
             feedItem={list}
-            userCredentials={{ [user._id]: user }}
-            token={token}
-          />
+            listCategory={data.categoryId ? data.categoryId.categoryName : 'Unknown'}
+            userCredentials={userCredentials}
+            fetchUserCredentials={fetchUserCredentials}
+            />
         ))
       ) : (
-        <div>You have no lists.</div>
+        <div>You have no lists yet</div>
       )}
     </FeedContainer>
   );
 };
 
-export default MyLists;
+export default Watchlist;

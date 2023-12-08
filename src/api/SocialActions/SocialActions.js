@@ -49,9 +49,9 @@ export const removeListFromWatchlist = async (listId, token) => {
   }
 };
 
-export const isListInWatchlist = async (listId, token) => {
+export const isListInWatchlist = async (listId, userId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/watchlist/isListInWatchlist?token=${token}`, {
+    const response = await fetch(`${API_BASE_URL}/watchlist/isListInWatchlist/${listId}/${userId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -95,14 +95,14 @@ export const voteOnList = async (listId, voteType, token) => {
   }
 };
 
-export const getUserVoteType = async (listId, token) => {
+export const getUserVoteType = async (listId, userId) => {
   try {
-      const response = await fetch(`${API_BASE_URL}/list/getUserVoteStatus/?token=${token}`, {
-          method: 'POST',
+      const response = await fetch(`${API_BASE_URL}/list/getUserVoteStatus/${listId}/${userId}`, {
+          method: 'GET',
           headers: {
               'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ listId }),
+         
       });
 
       if (!response.ok) {

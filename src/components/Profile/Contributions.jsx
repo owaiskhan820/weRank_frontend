@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { getUserContributions } from '../../api/profile/profile';
 import FeedItem from '../Feed/FeedItem';
 import LoadingModal from '../../shared/LoadingModal/LoadingModal';
 import { styled } from '@mui/material';
+import useUserCredentials from '../../hooks/User/useUserCredentials'; // Import the custom hook
+import useFetchProfileData from '../../hooks/profile/useFetchProfileData'; // Import the custom hook
 
 // Styled component for feed container
 const FeedContainer = styled('div')(({ theme }) => ({
@@ -16,25 +16,18 @@ const FeedContainer = styled('div')(({ theme }) => ({
   scrollbarWidth: 'none',
 }));
 
-const Contributions = () => {
-  const [myLists, setMyLists] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const { user, token } = useSelector((state) => state.auth);
+const Watchlist = ({ userId }) => {
+  const { data: myLists, isLoading } = useFetchProfileData(userId, 'contributions');
+  const { userCredentials, fetchUserCredentials } = useUserCredentials();
 
   useEffect(() => {
-    setLoading(true);
-    getUserContributions(user._id)
-      .then((lists) => {
-        setMyLists(lists);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error fetching my lists:', error);
-        setLoading(false);
-      });
-  }, [user._id]);
+    // Fetch user credentials for each list's user
+    myLists.forEach(list => {
+      fetchUserCredentials(list.userId);
+    });
+  }, [myLists, fetchUserCredentials]);
 
-  if (loading) {
+  if (isLoading) {
     return <LoadingModal />;
   }
 
@@ -45,15 +38,16 @@ const Contributions = () => {
           <FeedItem
             key={list._id}
             feedItem={list}
-            userCredentials={{ [user._id]: user }}
-            token={token}
-          />
+            listCategory={myLists.categoryId ? myLists.categoryId.categoryName : 'Unknown'}
+            userCredentials={userCredentials}
+            fetchUserCredentials={fetchUserCredentials}
+            />
         ))
       ) : (
-        <div>You have no lists.</div>
+        <div>No Contributions Yet</div>
       )}
     </FeedContainer>
   );
 };
 
-export default Contributions;
+export default Watchlist;

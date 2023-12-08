@@ -26,8 +26,8 @@ export const Feed = () => {
   const token = useSelector((state) => state.auth.token);
   const [selectedTab, setSelectedTab] = useState(0);
   const { isLoading, feedData } = useFetchFeedData(selectedTab, token);
+  
   const { userCredentials, fetchUserCredentials } = useUserCredentials();
-
   useEffect(() => {
     feedData.forEach(feedItem => {
       fetchUserCredentials(feedItem.userId);
@@ -40,7 +40,6 @@ export const Feed = () => {
 
   return (
     <StyledCard>
-      {isLoading && <LoadingModal />}
 
       <FeedTab selectedTab={selectedTab} onTabChange={handleTabChange} variant="fullWidth"/>
 
@@ -49,9 +48,9 @@ export const Feed = () => {
           <FeedItem
             key={index}
             feedItem={feedItem}
+            listCategory={feedItem.categoryId ? feedItem.categoryId.categoryName : 'Unknown'}
             userCredentials={userCredentials}
             fetchUserCredentials={fetchUserCredentials}
-            token={token}
           />
         ))}
       </ScrollableContainer>

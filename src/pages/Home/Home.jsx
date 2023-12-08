@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import useEmailVerification from '../../hooks/auth/useEmailVerification';
 import Alert from '@mui/material/Alert';
@@ -9,6 +9,7 @@ import Feed from '../../components/Feed/FeedRefactored';
 import CreateListComponent from '../../components/CreateList/CreateList';
 import ProfileComponent from '../../components/Profile/Profile';
 import Notifications from '../../components/Notifications/Notifications';
+import { useNavigate } from 'react-router-dom';
 
 const RootContainer = styled('div')(({ theme }) => ({
   flexGrow: 1,
@@ -24,7 +25,27 @@ const Home = () => {
   const [currentView, setCurrentView] = useState('feed');
   const auth = useSelector((state) => state.auth);
   const { isVerified, isFirstVerification } = useEmailVerification();
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const navigate = useNavigate();
 
+  
+  useEffect(() => {
+    if (!auth || !auth.user) {
+      navigate('/login');
+    }
+  }, [auth, navigate]);
+
+
+  const handleViewChange = (view, userId = null) => {
+    setCurrentView(view);
+    setCurrentUserId(userId);
+  };
+
+  const handleProfileSelected = () => {
+    setCurrentView('profile');
+    setCurrentUserId(auth.user._id);
+  };
+  
   return (
     <RootContainer>
       {auth.user && !isVerified && (
@@ -39,16 +60,19 @@ const Home = () => {
       )}
       <Grid container spacing={2}>
         <Sidebar item xs={false} md={2}>
-          <LeftSidebar onSelectionChange={setCurrentView} />
+        <LeftSidebar 
+            onSelectionChange={setCurrentView} 
+            onProfileSelected={handleProfileSelected}
+          />
         </Sidebar>
         <Grid item xs={12} md={7}>
           {currentView === 'feed' && <Feed />}
           {currentView === 'createList' && <CreateListComponent />}
-          {currentView === 'profile' && <ProfileComponent />}
+          {currentView === 'profile' && <ProfileComponent userId={currentUserId}/>}
           {currentView === 'notifications' && <Notifications />}
         </Grid>
         <Sidebar item xs={false} md={3}>
-          <RightSidebar />
+        <RightSidebar onUserClick={handleViewChange} />
         </Sidebar>
       </Grid>
     </RootContainer>
