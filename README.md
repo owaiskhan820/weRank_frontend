@@ -40,7 +40,7 @@ src/
 ├── components/ # Atomic UI components (Modals, Custom Buttons, Loaders)
 ├── pages/      # High-level route components (The "Views")
 ├── hooks/      # Custom React logic hooks for reusable business logic
-└── utils/      # Theme configurations and helper algorithms
+└── utils/      # Theme configurations and helper algorithms  ```
 
 ## 💎 Elite Features
 
@@ -59,7 +59,7 @@ The UI manages complex state transitions between the **For You** (Algorithmic) a
 
 To experience the award-winning interface locally, follow the steps below.
 
-> **Note:** You must have the [WeRank Backend](YOUR_BACKEND_REPO_LINK) running on **port 3000** for the frontend orchestration to function correctly.
+> **Note:** You must have the [WeRank Backend] https://github.com/owaiskhan820/WeRank_Backend running on **port 3000** for the frontend orchestration to function correctly.
 
 ### **Step 1: Clone & Install**
 ```bash
