@@ -45,15 +45,15 @@ The UI manages complex state transitions between the **For You** (Algorithmic) a
 ## 🏗️ Clean Architecture
 
 The codebase follows a strict **Separation of Concerns (SoC)**, ensuring that any developer can scale the platform without breaking the core logic.
-
+```text
 src/
 ├── api/        # Domain-driven API modules (Auth, Feed, Social, Ranking)
 ├── redux/      # Redux Toolkit Slices (Global state & persistence)
 ├── components/ # Atomic UI components (Modals, Custom Buttons, Loaders)
 ├── pages/      # High-level route components (The "Views")
 ├── hooks/      # Custom React logic hooks for reusable business logic
-└── utils/      # Theme configurations and helper algorithms  
-
+└── utils/      # Theme configurations and helper algorithms
+```
 
 ## ⚙️ Installation & Local Setup
 
