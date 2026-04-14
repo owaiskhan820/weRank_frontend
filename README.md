@@ -29,19 +29,6 @@ The frontend architecture was built with a focus on **scalability, modularity, a
 
 ---
 
-## 🏗️ Clean Architecture
-
-The codebase follows a strict **Separation of Concerns (SoC)**, ensuring that any developer can scale the platform without breaking the core logic.
-
-```text
-src/
-├── api/        # Domain-driven API modules (Auth, Feed, Social, Ranking)
-├── redux/      # Redux Toolkit Slices (Global state & persistence)
-├── components/ # Atomic UI components (Modals, Custom Buttons, Loaders)
-├── pages/      # High-level route components (The "Views")
-├── hooks/      # Custom React logic hooks for reusable business logic
-└── utils/      # Theme configurations and helper algorithms  ```
-
 ## 💎 Elite Features
 
 ### **1. The Ranking Engine Interface**
@@ -54,6 +41,19 @@ By implementing a hybrid of `react-beautiful-dnd` and `react-dnd`, we achieved a
 The UI manages complex state transitions between the **For You** (Algorithmic) and **Following** (Social) feeds. This architecture ensures a smooth user experience while handling high volumes of data, maintaining performance even as the ranking lists scale.
 
 ---
+
+## 🏗️ Clean Architecture
+
+The codebase follows a strict **Separation of Concerns (SoC)**, ensuring that any developer can scale the platform without breaking the core logic.
+
+src/
+├── api/        # Domain-driven API modules (Auth, Feed, Social, Ranking)
+├── redux/      # Redux Toolkit Slices (Global state & persistence)
+├── components/ # Atomic UI components (Modals, Custom Buttons, Loaders)
+├── pages/      # High-level route components (The "Views")
+├── hooks/      # Custom React logic hooks for reusable business logic
+└── utils/      # Theme configurations and helper algorithms  
+
 
 ## ⚙️ Installation & Local Setup
 
