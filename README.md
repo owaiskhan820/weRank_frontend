@@ -41,3 +41,28 @@ src/
 ├── pages/      # High-level route components (The "Views")
 ├── hooks/      # Custom React logic hooks for reusable business logic
 └── utils/      # Theme configurations and helper algorithms
+
+## 💎 Elite Features
+
+### **1. The Ranking Engine Interface**
+We engineered a custom UI that empowers users to cast **"Weighted Votes."** Unlike a primitive "like" toggle, our interface communicates directly with the backend `getListScore` algorithm to reflect real-time traction and list authority. This ensures the UI is always a live reflection of community-driven data.
+
+### **2. Visual Reordering (High-Precision DnD)**
+By implementing a hybrid of `react-beautiful-dnd` and `react-dnd`, we achieved a highly specific UX where users physically manipulate item hierarchy. This isn't just a visual trick—the frontend dynamically calculates new indices and synchronizes with the `rearrangeList` backend endpoint instantly for a seamless, lag-free experience.
+
+### **3. Algorithmic Feed Switching**
+The UI manages complex state transitions between the **For You** (Algorithmic) and **Following** (Social) feeds. This architecture ensures a smooth user experience while handling high volumes of data, maintaining performance even as the ranking lists scale.
+
+---
+
+## ⚙️ Installation & Local Setup
+
+To experience the award-winning interface locally, follow the steps below.
+
+> **Note:** You must have the [WeRank Backend](YOUR_BACKEND_REPO_LINK) running on **port 3000** for the frontend orchestration to function correctly.
+
+### **Step 1: Clone & Install**
+```bash
+git clone [https://github.com/your-username/werank-frontend.git](https://github.com/your-username/werank-frontend.git)
+cd werank-frontend
+npm install
